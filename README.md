@@ -1,2 +1,2 @@
-# tesseract
-API Symfony 4 Auth
+# Tesseract
+API Symfony 4 squeleton

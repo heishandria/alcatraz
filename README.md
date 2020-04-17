@@ -1,2 +1,2 @@
 # Tesseract
-API Symfony 4 squeleton
+API Symfony 4 squeleton + Dynamic CRUD

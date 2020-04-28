@@ -29,6 +29,9 @@ services:
     app.form.handler:
         class: App\Handler\FormHandler
 
+    app.utils.stringutil:
+        class: App\Utils\StringUtil
+
     App\EventListener\ControllerExceptionListener:
         tags:
             - { name: kernel.event_listener }

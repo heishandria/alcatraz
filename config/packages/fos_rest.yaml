@@ -1,6 +1,5 @@
 # Read the documentation: https://symfony.com/doc/master/bundles/FOSRestBundle/index.html
 fos_rest:
-    allowed_methods_listener: true
     param_fetcher_listener: true
     body_listener:
         enabled: true
@@ -15,3 +14,5 @@ fos_rest:
     exception:
         enabled: true
         exception_controller: 'fos_rest.exception.controller:showAction'
+    service:
+        serializer: "fos_rest.serializer.jms"

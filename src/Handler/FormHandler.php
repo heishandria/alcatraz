@@ -134,14 +134,12 @@ Class FormHandler
             $objectTemp, array('method' => $request->getMethod())
         );
 
-        $object = json_decode($request->getContent(), true);
-
         /** Submit manually object */
-        $form->submit($object, 'PATCH' !== $request->getMethod());
+        $form->submit($request->request->getIterator()->getArrayCopy(), 'PATCH' !== $request->getMethod());
 
         if ($form->isValid()) {
             $object = $form->getData();
-
+//            dump($form->getData());die;
             if ($request->isMethod('POST')) {
                 $this->em->persist($object);
             }

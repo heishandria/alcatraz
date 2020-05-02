@@ -139,7 +139,7 @@ Class FormHandler
 
         if ($form->isValid()) {
             $object = $form->getData();
-//            dump($form->getData());die;
+
             if ($request->isMethod('POST')) {
                 $this->em->persist($object);
             }

@@ -111,8 +111,14 @@
             "config/packages/fos_rest.yaml"
         ]
     },
+    "friendsofsymfony/user-bundle": {
+        "version": "v2.1.2"
+    },
     "gedmo/doctrine-extensions": {
         "version": "v2.4.39"
+    },
+    "gesdinet/jwt-refresh-token-bundle": {
+        "version": "v0.9.1"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
@@ -149,8 +155,26 @@
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.2"
     },
+    "lcobucci/jwt": {
+        "version": "3.3.1"
+    },
+    "lexik/jwt-authentication-bundle": {
+        "version": "2.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "2.5",
+            "ref": "5b2157bcd5778166a5696e42f552ad36529a07a6"
+        },
+        "files": [
+            "config/packages/lexik_jwt_authentication.yaml"
+        ]
+    },
     "monolog/monolog": {
         "version": "1.25.3"
+    },
+    "namshi/jose": {
+        "version": "7.2.3"
     },
     "nelmio/api-doc-bundle": {
         "version": "3.0",
@@ -498,6 +522,9 @@
     },
     "symfony/stopwatch": {
         "version": "v4.4.7"
+    },
+    "symfony/templating": {
+        "version": "v4.4.8"
     },
     "symfony/test-pack": {
         "version": "v1.0.6"

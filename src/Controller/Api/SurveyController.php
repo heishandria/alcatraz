@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Annotations\ApiResource;
-use App\Entity\Question;
+use App\Entity\Survey;
 use App\Handler\FormHandler;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
@@ -17,12 +17,12 @@ use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 
 /**
- * Question controller
+ * Survey controller
  *
- * @SWG\Tag(name="Question")
- * @ApiResource("Question")
+ * @SWG\Tag(name="Survey")
+ * @ApiResource("Survey")
  */
-class QuestionController extends AbstractFOSRestController
+class SurveyController extends AbstractFOSRestController
 {
     /**
      * @var FormHandler $formHandler
@@ -30,7 +30,7 @@ class QuestionController extends AbstractFOSRestController
     private $formHandler;
 
     /**
-     * QuestionController constructor.
+     * SurveyController constructor.
      *
      * @param FormHandler $formHandler
      */
@@ -40,52 +40,55 @@ class QuestionController extends AbstractFOSRestController
     }
 
     /**
-     * Get question by ID
+     * Get survey by ID
      *
-     * @Rest\Get("/questions/{id}", requirements={"id":"\d+"})
-     * @Rest\View(serializerGroups={"question.details", "question.ext.details", "default"})
+     * @Rest\Get("/surveys/{id}"), name="survey_show", requirements={"id":"\d+"}
+     * @Rest\View(serializerGroups={"survey.details", "survey.ext.details", "default"})
      *
      * @SWG\Parameter(
-     *     name="question",
+     *     name="survey",
      *     in="path",
      *     type="integer",
-     *     description="Question ID"
+     *     description="Survey ID"
      * )
      * @SWG\Response(
      *     response=Response::HTTP_OK,
-     *     description="Returns an question",
-     *     @ApiDoc\Model(type=Question::class)
+     *     description="Returns an survey",
+     *     @ApiDoc\Model(type=Survey::class)
      * )
      * @SWG\Response(
      *     response=Response::HTTP_NOT_FOUND,
-     *     description="When question not found",
+     *     description="When survey not found",
      * )
      *
      * @ApiDoc\Security(name="Bearer")
      *
-     * @param Question $question
+     * @param Survey $survey
      * @return View
      */
-    public function getQuestionAction(Question $question)
+    public function getSurveyAction(Survey $survey)
     {
-        return $this->view($question, !$question ? Response::HTTP_NOT_FOUND : Response::HTTP_OK);
+        return $this->view($survey, !$survey ? Response::HTTP_NOT_FOUND : Response::HTTP_OK);
     }
 
     /**
-     * List all questions
+     * List all surveys
      *
-     * @Rest\Get("/questions"), name="get_questions"
+     * @Rest\Get("/surveys"), name="survey_list"
      *
-     * @Rest\QueryParam(name="active",  map=false,  requirements="\d+", nullable=true,  description="Active questions")
-     * @Rest\QueryParam(name="limit",  map=false,  requirements="\d+", nullable=true,   description="Number of questions to return")
-     * @Rest\View(serializerGroups={"question.details", "question.ext.details", "default"})
+     * @Rest\QueryParam(name="active", map=false, requirements="\d+", nullable=true, description="Active surveys")
+     * @Rest\QueryParam(name="limit", map=false, requirements="\d+", nullable=true, description="Number of survey to return")
+     * @Rest\View(serializerGroups={"survey.details", "survey.ext.details", "default"})
+     *
+     * @param Request $request
+     * @param ParamFetcherInterface $paramFetcher
      *
      * @SWG\Parameter(
      *     name="active",
      *     in="query",
      *     type="integer",
      *     enum={0,1},
-     *     description="Question active status"
+     *     description="Survey active status"
      * )
      * @SWG\Parameter(
      *     name="limit",
@@ -95,28 +98,25 @@ class QuestionController extends AbstractFOSRestController
      * )
      * @SWG\Response(
      *     response=Response::HTTP_OK,
-     *     description="Returns a list of questions",
+     *     description="Returns a list of surveys",
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@ApiDoc\Model(type=Question::class))
+     *         @SWG\Items(ref=@ApiDoc\Model(type=Survey::class))
      *     )
      * )
      * @SWG\Response(
      *     response=Response::HTTP_NOT_FOUND,
-     *     description="When question not found",
+     *     description="When survey not found",
      * )
      *
      * @ApiDoc\Security(name="Bearer")
      *
-     * @param Request $request
-     * @param ParamFetcherInterface $paramFetcher
-     *
      * @return View
      * @throws NotFoundHttpException
      */
-    public function getQuestionsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    public function getSurveysAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        /** @var array $criteria */
+        /** @var Array $criteria */
         $criteria = [];
 
         if (null !== $paramFetcher->get('active')) {
@@ -124,29 +124,28 @@ class QuestionController extends AbstractFOSRestController
         }
 
         $limit = $paramFetcher->get('limit') ?? null;
+        /** @var Array $surveys */
+        $surveys = $this->formHandler->getAll($criteria, $limit);
 
-        /** @var array $questions */
-        $questions = $this->formHandler->getAll($criteria, $limit);
-
-        return $this->view($questions, !$questions ? Response::HTTP_NOT_FOUND : Response::HTTP_OK);
+        return $this->view($surveys, !$surveys ? Response::HTTP_NOT_FOUND : Response::HTTP_OK);
     }
 
     /**
-     * Post question
+     * Post survey
      *
-     * @Rest\Post("/questions"), name="question_create"
-     * @Rest\View(serializerGroups={"question.details", "question.ext.details", "default"})
+     * @Rest\Post("/surveys"), name="survey_create"
+     * @Rest\View(serializerGroups={"survey.details", "survey.ext.details", "default"})
      *
      * @SWG\Parameter(
-     * 		name="question",
+     * 		name="survey",
      * 		in="body",
      * 		required=true,
-     * 		@ApiDoc\Model(type=Question::class)
+     * 		@ApiDoc\Model(type=Survey::class)
      *	)
      * @SWG\Response(
      *     response=Response::HTTP_CREATED,
-     *     description="Returns the created question",
-     *     @ApiDoc\Model(type=Question::class)
+     *     description="Returns the created survey",
+     *     @ApiDoc\Model(type=Survey::class)
      * )
      * @SWG\Response(
      *     response=Response::HTTP_BAD_REQUEST,
@@ -156,17 +155,17 @@ class QuestionController extends AbstractFOSRestController
      * @ApiDoc\Security(name="Bearer")
      *
      * @param Request $request
-     * @return Response|View
+     * @return View|Response
      */
-    public function postQuestionAction(Request $request)
+    public function postSurveyAction(Request $request)
     {
         try {
-            /** @var Question $question */
-            $question = $this->formHandler->create(
+            /** @var Survey $survey */
+            $survey = $this->formHandler->create(
                 $request
             );
 
-            return $this->view($question, Response::HTTP_CREATED);
+            return $this->view($survey,Response::HTTP_CREATED);
         } catch (InvalidFormException $exception) {
             $errors = $exception->getErrorMessages($exception->getForm());
             return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
@@ -174,27 +173,27 @@ class QuestionController extends AbstractFOSRestController
     }
 
     /**
-     * Put question
+     * Put survey
      *
-     * @Rest\Put("/questions/{id}"), name="question_update"
-     * @Rest\View(serializerGroups={"question.details", "question.ext.details", "default"})
+     * @Rest\Put("/surveys/{id}"), name="survey_update"
+     * @Rest\View(serializerGroups={"survey.details", "survey.ext.details", "default"})
      *
      * @SWG\Parameter(
-     *     name="question",
+     *     name="survey",
      *     in="path",
      *     type="integer",
-     *     description="Question ID"
+     *     description="Survey ID"
      * )
      * @SWG\Parameter(
-     * 		name="question",
+     * 		name="survey",
      * 		in="body",
      * 		required=true,
-     * 		@ApiDoc\Model(type=Question::class)
+     * 		@ApiDoc\Model(type=Survey::class)
      *	)
      * @SWG\Response(
      *     response=Response::HTTP_CREATED,
-     *     description="Returns the updated question",
-     *     @ApiDoc\Model(type=Question::class)
+     *     description="Returns the updated survey",
+     *     @ApiDoc\Model(type=Survey::class)
      * )
      * @SWG\Response(
      *     response=Response::HTTP_BAD_REQUEST,
@@ -204,19 +203,19 @@ class QuestionController extends AbstractFOSRestController
      * @ApiDoc\Security(name="Bearer")
      *
      * @param Request $request
-     * @param Question $question
-     * @return Response|View
+     * @param Survey $survey
+     * @return View|Response
      */
-    public function putQuestionAction(Request $request, Question $question)
+    public function putSurveyAction(Request $request, Survey $survey)
     {
         try {
-            /** @var Question $question */
-            $question = $this->formHandler->update(
+            /** @var Survey $survey */
+            $survey = $this->formHandler->update(
                 $request,
-                $question
+                $survey
             );
 
-            return $this->view($question, Response::HTTP_OK);
+            return $this->view($survey,Response::HTTP_OK);
         } catch (InvalidFormException $exception) {
             $errors = $exception->getErrorMessages($exception->getForm());
             return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
@@ -224,27 +223,27 @@ class QuestionController extends AbstractFOSRestController
     }
 
     /**
-     * Partially update question
+     * Partially update survey
      *
-     * @Rest\Patch("/questions/{id}"), name="question_update_field"
-     * @Rest\View(serializerGroups={"question.details", "question.ext.details", "default"})
+     * @Rest\Patch("/surveys/{id}"), name="survey_update_field"
+     * @Rest\View(serializerGroups={"survey.details", "survey.ext.details", "default"})
      *
      * @SWG\Parameter(
-     *     name="question",
+     *     name="survey",
      *     in="path",
      *     type="integer",
-     *     description="Question ID"
+     *     description="Survey ID"
      * )
      * @SWG\Parameter(
-     * 		name="question",
+     * 		name="survey",
      * 		in="body",
      * 		required=true,
-     * 		@ApiDoc\Model(type=Question::class)
+     * 		@ApiDoc\Model(type=Survey::class)
      *	)
      * @SWG\Response(
      *     response=Response::HTTP_CREATED,
-     *     description="Returns the updated question",
-     *     @ApiDoc\Model(type=Question::class)
+     *     description="Returns the updated survey",
+     *     @ApiDoc\Model(type=Survey::class)
      * )
      * @SWG\Response(
      *     response=Response::HTTP_BAD_REQUEST,
@@ -254,19 +253,19 @@ class QuestionController extends AbstractFOSRestController
      * @ApiDoc\Security(name="Bearer")
      *
      * @param Request $request
-     * @param Question $question
-     * @return Response|View
+     * @param Survey $survey
+     * @return View|Response
      */
-    public function patchQuestionAction(Request $request, Question $question)
+    public function patchSurveyAction(Request $request, Survey $survey)
     {
         try {
-            /** @var Question $question */
-            $question = $this->formHandler->update(
+            /** @var Survey $survey Update partially */
+            $survey = $this->formHandler->update(
                 $request,
-                $question
+                $survey
             );
 
-            return $this->view($question, Response::HTTP_OK);
+            return $this->view($survey,Response::HTTP_OK);
         } catch (InvalidFormException $exception) {
             $errors = $exception->getErrorMessages($exception->getForm());
             return $this->handleView($this->view($errors, Response::HTTP_BAD_REQUEST));
@@ -274,15 +273,15 @@ class QuestionController extends AbstractFOSRestController
     }
 
     /**
-     * Delete question
+     * Delete survey
      *
-     * @Rest\Delete("/questions/{id}"), name="question_delete"
+     * @Rest\Delete("/surveys/{id}"), name="survey_delete"
      *
-     * @SWG\Parameter(
-     *     name="question",
+     * * @SWG\Parameter(
+     *     name="survey",
      *     in="path",
      *     type="integer",
-     *     description="Question ID"
+     *     description="Survey ID"
      * )
      * @SWG\Response(
      *     response=Response::HTTP_NO_CONTENT,
@@ -290,21 +289,21 @@ class QuestionController extends AbstractFOSRestController
      * )
      * @SWG\Response(
      *     response=Response::HTTP_NOT_FOUND,
-     *     description="When question not found",
+     *     description="When survey not found",
      * )
      *
      * @ApiDoc\Security(name="Bearer")
      *
-     * @param Question $question
+     * @param Survey $survey
      * @return Response
      */
-    public function deleteQuestionAction(Question $question)
+    public function deleteSurveyAction(Survey $survey)
     {
-        /** @var Question $question */
+        /** @var Survey $survey */
         $this->formHandler->delete(
-            $question
+            $survey
         );
 
-        return $this->handleView($this->view("Question resource deleted", Response::HTTP_NO_CONTENT));
+        return $this->handleView($this->view("survey resource deleted", Response::HTTP_NO_CONTENT));
     }
 }

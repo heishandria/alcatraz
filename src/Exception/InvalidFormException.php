@@ -40,10 +40,10 @@ class InvalidFormException extends HttpException
     }
 
     /**
-     * @param Form $form
+     * @param Form|array $form
      * @return array
      */
-    public function getErrorMessages(Form $form)
+    public function getErrorMessages(?Form $form)
     {
         $errors = array();
        

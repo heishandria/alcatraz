@@ -1,0 +1,13 @@
+fos_user:
+    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    firewall_name: api_login
+    user_class: App\Entity\User
+    service:
+        mailer: fos_user.mailer.twig_swift
+    registration:
+        confirmation:
+            enabled: true
+            template:   '@FOSUser/Registration/email.txt.twig'
+    from_email:
+        address: "heishandria@gmail.com"
+        sender_name: Tesseract Security

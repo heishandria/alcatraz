@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Utils\StringUtil;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -13,9 +13,9 @@ use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation as ApiDoc;
 
 /**
- * QuestionFormat controller
+ * Referential controller
  *
- * @SWG\Tag(name="Referentiel")
+ * @SWG\Tag(name="Referential")
  */
 class ReferentialController extends AbstractFOSRestController
 {
@@ -52,7 +52,7 @@ class ReferentialController extends AbstractFOSRestController
         /** @var String $type */
         $type = $stringUtil->convertSnakeToCamel($type);
 
-        if (!class_exists(self::ENTITY_PATH."$type")) {
+        if (Referential::class != get_parent_class(self::ENTITY_PATH."$type") || !class_exists(self::ENTITY_PATH."$type")) {
             return $this->view([], Response::HTTP_NOT_FOUND );
         }
 

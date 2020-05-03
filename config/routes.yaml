@@ -6,4 +6,12 @@ api:
 app.swagger_ui:
   path: /api/doc
   methods: GET
-  defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+  defaults: { _controller: nelmi_api_doc.controller.swagger_ui }
+
+api_auth_login:
+  path: /api/auth/login
+  methods:  [POST]
+
+gesdinet_jwt_refresh_token:
+  path:       /api/token/refresh
+  controller: gesdinet.jwtrefreshtoken::refresh
